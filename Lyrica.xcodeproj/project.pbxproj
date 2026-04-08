@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		C9D18A1A2F82DF0700D34AF7 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C9D18A192F82DF0700D34AF7 /* FirebaseAuth */; };
+		C9D18A1C2F82DF0700D34AF7 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = C9D18A1B2F82DF0700D34AF7 /* FirebaseCore */; };
+		C9D18A1E2F82DF0700D34AF7 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = C9D18A1D2F82DF0700D34AF7 /* FirebaseFirestore */; };
+		C9D18A202F82DFC800D34AF7 /* FirebaseAuthCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = C9D18A1F2F82DFC800D34AF7 /* FirebaseAuthCombine-Community */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		C9D3CD112F81247700A58BFA /* Lyrica.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lyrica.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,16 +43,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9D18A1C2F82DF0700D34AF7 /* FirebaseCore in Frameworks */,
+				C9D18A1A2F82DF0700D34AF7 /* FirebaseAuth in Frameworks */,
+				C9D18A1E2F82DF0700D34AF7 /* FirebaseFirestore in Frameworks */,
+				C9D18A202F82DFC800D34AF7 /* FirebaseAuthCombine-Community in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C9D18A182F82DF0600D34AF7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		C9D3CD082F81247700A58BFA = {
 			isa = PBXGroup;
 			children = (
 				C9D3CD132F81247700A58BFA /* Lyrica */,
+				C9D18A182F82DF0600D34AF7 /* Frameworks */,
 				C9D3CD122F81247700A58BFA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -78,6 +97,10 @@
 			);
 			name = Lyrica;
 			packageProductDependencies = (
+				C9D18A192F82DF0700D34AF7 /* FirebaseAuth */,
+				C9D18A1B2F82DF0700D34AF7 /* FirebaseCore */,
+				C9D18A1D2F82DF0700D34AF7 /* FirebaseFirestore */,
+				C9D18A1F2F82DFC800D34AF7 /* FirebaseAuthCombine-Community */,
 			);
 			productName = Lyrica;
 			productReference = C9D3CD112F81247700A58BFA /* Lyrica.app */;
@@ -107,6 +130,9 @@
 			);
 			mainGroup = C9D3CD082F81247700A58BFA;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				C9D18A172F82D92600D34AF7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C9D3CD122F81247700A58BFA /* Products */;
 			projectDirPath = "";
@@ -335,6 +361,40 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C9D18A172F82D92600D34AF7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.11.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C9D18A192F82DF0700D34AF7 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C9D18A172F82D92600D34AF7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		C9D18A1B2F82DF0700D34AF7 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C9D18A172F82D92600D34AF7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		C9D18A1D2F82DF0700D34AF7 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C9D18A172F82D92600D34AF7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		C9D18A1F2F82DFC800D34AF7 /* FirebaseAuthCombine-Community */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C9D18A172F82D92600D34AF7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseAuthCombine-Community";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C9D3CD092F81247700A58BFA /* Project object */;
 }

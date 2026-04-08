@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+enum UserRole: String, Codable {
+    case songWriter
+    case singer
+}
