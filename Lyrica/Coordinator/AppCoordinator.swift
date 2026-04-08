@@ -10,12 +10,10 @@ import Combine
 
 final class AppCoordinator: Coordinator {
     
-    // Mark: - Properties
-    
+    // MARK: - Properties
     private let window: UIWindow
     private let navigationController: UINavigationController
     private let authService = AuthService()
-//    private let authService: AuthService
     
     private weak var homeNavigationController: UINavigationController?
     private var cancellables = Set<AnyCancellable>()
@@ -33,7 +31,7 @@ final class AppCoordinator: Coordinator {
         return coordinator
     }
     
-    // Mark: - Coordinator
+    // MARK: - Coordinator
     
     func start() {
         window.rootViewController = navigationController
@@ -55,8 +53,78 @@ final class AppCoordinator: Coordinator {
             .store(in: &cancellables)
     }
     
+    // MARK: - Auth State
+    
+    private func fetchProfileAndRoute(user: AuthUser) {
+        authService.fetchUserProfile(uid: user.uid)
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    if case .failure = completion {
+                        self?.routeByRole()
+                    }
+                }, receiveValue: { [weak self] profile in
+                    UserDefaults.standard.userRole = profile.role
+                    UserDefaults.standard.customerName = "\(profile.firstName) \(profile.lastName)"
+                    self?.routeByRole()
+                }
+            )
+            .store(in: &cancellables)
+    }
+    
+    private func routeByRole() {
+        switch UserDefaults.standard.userRole {
+        case .singer:
+            showSingerHome()
+        case .songWriter:
+            showSongWriterHome()
+        case .none:
+            showLogin()
+        }
+        
+    }
+    
+    // MARK: - Home Screens
+    
+    private func showSingerHome() {
+        
+    }
+    
+    private func showSongWriterHome() {
+        
+    }
+
+    private func makeTabBar() -> UITabBarController {
+        
+    }
+    
+    // MARK: - Task Screens
+    
+    private func showCreateSong() {
+        
+    }
+    
+    private func showSongDetails() {
+        
+    }
+    
+    // MARK: - Auth Flow
+    
+    private func showLogin()  {
+        
+    }
+    
+    private func showSignUp() {
+        
+    }
+    
     private func showOnboarding() {
-        let vc = OnboardingViewController()
+        
+    }
+    
+    // MARK: - Logout
+    
+    private func handleLogout() {
         
     }
 }

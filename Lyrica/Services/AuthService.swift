@@ -13,7 +13,7 @@ class AuthService {
         Auth.auth().currentUser
     }
     
-    var authStateDidChangePUBLISHER: AnyPublisher<AuthUser?, Never> {
+    var authStateDidChangePublisher: AnyPublisher<AuthUser?, Never> {
         Auth.auth().authStateDidChangePublisher()
             .map { $0 }
             .eraseToAnyPublisher()
