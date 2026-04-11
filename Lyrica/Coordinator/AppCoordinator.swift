@@ -10,7 +10,7 @@ import Combine
 
 final class AppCoordinator: Coordinator {
     
-    // MARK: - Properties
+    // MARK: - Propertiesd
     private let window: UIWindow
     private let navigationController: UINavigationController
     private let authService = AuthService()
@@ -74,10 +74,10 @@ final class AppCoordinator: Coordinator {
     
     private func routeByRole() {
         switch UserDefaults.standard.userRole {
-        case .singer:
-            showSingerHome()
-        case .songWriter:
-            showSongWriterHome()
+        case .customer:
+            showCustomerHome()
+        case .author:
+            showAuthorHome()
         case .none:
             showLogin()
         }
@@ -86,17 +86,17 @@ final class AppCoordinator: Coordinator {
     
     // MARK: - Home Screens
     
-    private func showSingerHome() {
+    private func showCustomerHome() {
         
     }
     
-    private func showSongWriterHome() {
+    private func showAuthorHome() {
         
     }
 
-    private func makeTabBar() -> UITabBarController {
-        
-    }
+//    private func makeTabBar() -> UITabBarController {
+//        
+//    }
     
     // MARK: - Task Screens
     

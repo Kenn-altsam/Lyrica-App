@@ -1,5 +1,5 @@
 //
-//  ListingServic.swift
+//  AuthorHomeViewModel.swift
 //  Lyrica
 //
 //  Created by Altynbek Kenzhe on 05.04.2026.

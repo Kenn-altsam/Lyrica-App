@@ -8,6 +8,6 @@
 import Foundation
 
 enum UserRole: String, Codable {
-    case songWriter
-    case singer
+    case author
+    case customer
 }
