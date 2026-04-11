@@ -87,7 +87,7 @@ final class AppCoordinator: Coordinator {
     // MARK: - Home Screens
     
     private func showCustomerHome() {
-        
+//        let homeVC = 
     }
     
     private func showAuthorHome() {
@@ -111,7 +111,7 @@ final class AppCoordinator: Coordinator {
     // MARK: - Auth Flow
     
     private func showLogin()  {
-        
+        let vc = 
     }
     
     private func showSignUp() {
@@ -119,7 +119,12 @@ final class AppCoordinator: Coordinator {
     }
     
     private func showOnboarding() {
-        
+        let vc = OnboardingViewController()
+        vc.onContinue = { [weak self] in
+            UserDefaults.standard.hasSeenOnboarding = true
+            self?.showLogin()
+        }
+        navigationController.pushViewController(vc, animated: true)
     }
     
     // MARK: - Logout
