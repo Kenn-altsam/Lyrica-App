@@ -65,7 +65,7 @@ final class AppCoordinator: Coordinator {
                     }
                 }, receiveValue: { [weak self] profile in
                     UserDefaults.standard.userRole = profile.role
-                    UserDefaults.standard.customerName = "\(profile.firstName) \(profile.lastName)"
+                    UserDefaults.standard.authorName = "\(profile.firstName) \(profile.lastName)"
                     self?.routeByRole()
                 }
             )
@@ -86,36 +86,86 @@ final class AppCoordinator: Coordinator {
     
     // MARK: - Home Screens
     
-    private func showCustomerHome() {
-//        let homeVC = 
+    private func showAuthorHome() {
+        let homeVC = AuthorHomeViewController(viewModel: AuthorHomeViewModel())
+        homeVC.onAddSongTap = { [weak self] in
+            self?.showCreateSong()
+        }
+        homeVC.onSongTap = { [weak self] song in
+            self?.showSongDetails(song: song)
+        }
+        homeVC.onLogout = { [weak self] in
+            self?.handleLogout()
+        }
+        homeVC.tabBarItem = UITabBarItem(title: "Songs", image: UIImage(systemName: "list.bullet"), tag: 0)
+        
+        let homeNav = UINavigationController(rootViewController: homeVC)
+        homeNavigationController = homeNav
+        navigationController.setViewControllers( [makeTabBar(homeNav: homeNav)], animated: true)
     }
     
-    private func showAuthorHome() {
+    private func showCustomerHome() {
+        let homeVC = CustomerHomeViewController(viewModel: CustomerHomeViewModel())
+        homeVC.onSongTap = { [weak self] song in
+            self?.showSongDetails(song: song)
+        }
+        homeVC.onLogout = { [weak self] in
+            self?.handleLogout()
+        }
+        homeVC.tabBarItem = UITabBarItem(title: "Songs", image: UIImage(systemName: "list.bullet"), tag: 0)
         
+        let homeNav = UINavigationController(rootViewController: homeVC)
+        homeNavigationController = homeNav
+        navigationController.setViewControllers( [makeTabBar(homeNav: homeNav)], animated: true)
     }
 
-//    private func makeTabBar() -> UITabBarController {
-//        
-//    }
-    
-    // MARK: - Task Screens
-    
-    private func showCreateSong() {
+    private func makeTabBar(homeNav: UINavigationController) -> UITabBarController {
+        let profileVC = ProfileViewController(viewModel: ProfileViewModel())
+        profileVC.onLogout = { [weak self] in
+            self?.handleLogout()
+        }
+        profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.circle"), tag: 1)
+        let profileNav = UINavigationController(rootViewController: profileVC)
         
+        let tabBar = UITabBarController()
+        tabBar.viewControllers = [homeNav, profileNav]
+        tabBar.tabBar.tintColor = .lyricaTerracotta
+        return tabBar
     }
     
-    private func showSongDetails() {
-        
+    // MARK: - Task Screens
+    private func showCreateSong() {
+        let vc = CreateSongViewController(viewModel: CreateSongViewModel())
+        vc.onSongCreated = { [weak self] in
+            self?.homeNavigationController?.popViewController(animated: true)
+        }
+        homeNavigationController?.pushViewController(vc, animated: true)
+    }
+    
+    private func showSongDetails(song: SongModel) {
+        let vc = SongDetailsViewController(viewModel: SongDetailsViewModel(song: song))
+        homeNavigationController?.pushViewController(vc, animated: true)
     }
     
     // MARK: - Auth Flow
     
     private func showLogin()  {
-        let vc = 
+        let vc = LoginViewController(viewModel: LoginViewModel())
+        vc.onLoginSuccess = { [weak self] user in
+            self?.fetchProfileAndRoute(user: user)
+        }
+        vc.onSignUpTap = { [weak self] in
+            self?.showSignUp()
+        }
+        navigationController.setViewControllers( [vc], animated: false)
     }
     
     private func showSignUp() {
-        
+        let vc = SignUpViewController(viewModel: SignUpViewModel())
+        vc.onSignUpSuccess = { [weak self] in
+            self?.routeByRole()
+        }
+        navigationController.pushViewController(vc, animated: true)
     }
     
     private func showOnboarding() {
@@ -130,6 +180,8 @@ final class AppCoordinator: Coordinator {
     // MARK: - Logout
     
     private func handleLogout() {
-        
+        try? authService.logOut()
+        UserDefaults.standard.userRole = nil
+        showLogin()
     }
 }

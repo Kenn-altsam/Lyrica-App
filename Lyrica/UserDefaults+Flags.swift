@@ -22,8 +22,8 @@ extension UserDefaults {
         set { set(newValue?.rawValue, forKey: "userRole") }
     }
     
-    var customerName: String {
-        get { string(forKey: "customerName") ?? ""}
-        set { set(newValue, forKey: "customerName")}
+    var authorName: String {
+        get { string(forKey: "authorName") ?? ""}
+        set { set(newValue, forKey: "authorName")}
     }
 }

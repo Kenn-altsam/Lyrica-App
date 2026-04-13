@@ -1,5 +1,5 @@
 //
-//  SingerHomeViewModel.swift
+//  AuthorHomeViewModel.swift
 //  Lyrica
 //
 //  Created by Altynbek Kenzhe on 05.04.2026.
@@ -10,18 +10,18 @@ import Combine
 
 class CustomerHomeViewModel {
     
-    // MARK: - Output
+    // Mark: - Output
     var onSongsUpdated: (() -> Void)?
     private(set) var songs: [SongModel] = []
     
-    // MARK: - Private
+    // Mark: - Private
     private let songService = SongService.shared
     private let authService = AuthService()
     private var cancellables = Set<AnyCancellable>()
     
-    // MARK: - Data
+    // Mark: - Data
     func numberOfSongs() -> Int {
-        return songs.count
+        songs.count
     }
     
     func song(at index: Int) -> SongModel {
@@ -29,9 +29,7 @@ class CustomerHomeViewModel {
     }
     
     func fetchSongs() {
-        guard let uid = authService.currentUser?.uid else { return }
-        
-        songService.fetchSongs(for: uid)
+        songService.fetchSongs()
             .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { completion in

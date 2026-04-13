@@ -1,5 +1,5 @@
 //
-//  SingerHomeViewController.swift
+//  AuthorHomeViewController.swift
 //  Lyrica
 //
 //  Created by Altynbek Kenzhe on 05.04.2026.
@@ -9,19 +9,15 @@ import UIKit
 
 class CustomerHomeViewController: UIViewController {
     
-    // MARK: - Callbacks (set by Coordinator)
-    
-    var onAddSongTap: (() -> Void)?
+    // Mark: - Callbacks (set by Coordinator)
     var onSongTap: ((SongModel) -> Void)?
     var onLogout: (() -> Void)?
     
-    // MARK: - Properties
-    
+    // Mark: - Properties
     private let rootView = CustomerHomeView()
     private let viewModel: CustomerHomeViewModel
-
-    // MARK: - Init
     
+    // Mark: - Init
     init(viewModel: CustomerHomeViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -31,7 +27,7 @@ class CustomerHomeViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Lifecycle
+    // Mark: - Lifecycle
     
     override func loadView() {
         view = rootView
@@ -39,7 +35,7 @@ class CustomerHomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "My Songs"
+        title = "Active Songs"
         setupNavBar()
         setupTableView()
         viewModel.onSongsUpdated = { [weak self] in
@@ -52,35 +48,29 @@ class CustomerHomeViewController: UIViewController {
         viewModel.fetchSongs()
     }
     
-    // MARK: - Setup
-    
+    // Mark: - Setup
     private func setupNavBar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .add, target: self, action: #selector(addSongTapped)
-        )
+        
     }
     
     private func setupTableView() {
-        rootView.tableView.delegate = self
         rootView.tableView.dataSource = self
-    }
-    
-    // MARK: - Actions
-    @objc
-    private func addSongTapped() {
-        onAddSongTap?()
+        rootView.tableView.delegate = self
+        
     }
 }
 
-// MARK: - UITableViewDataSource & UITableViewDelegate
-extension CustomerHomeViewController: UITableViewDelegate, UITableViewDataSource {
+// Mark: - UITableViewDataSource & UITableViewDelegate
+
+extension CustomerHomeViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         viewModel.numberOfSongs()
     }
-    
+   
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: SongTableViewCell.identifier, for: indexPath) as? SongTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: SongTableViewCell.identifier, for: indexPath
+        ) as? SongTableViewCell else {
             return UITableViewCell()
         }
         cell.configure(with: viewModel.song(at: indexPath.row))
@@ -91,4 +81,3 @@ extension CustomerHomeViewController: UITableViewDelegate, UITableViewDataSource
         onSongTap?(viewModel.song(at: indexPath.row))
     }
 }
-

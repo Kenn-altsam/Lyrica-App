@@ -25,8 +25,8 @@ struct SongModel {
             "genre": genre,
             "lyricsPreview": lyricsPreview,
             "price": price,
-            "createdAt": createdAt.timeIntervalSince1970,
-            "authorID": authorUID,
+            "createdAt": createdAt,
+            "authorUID": authorUID,
             "authorName": authorName
         ]
     }
@@ -56,16 +56,17 @@ struct SongModel {
         }
     }
     
-    init(id: String = UUID().uuidString, title: String, description: String, price: Int, lyricsPreview: String, createdAt: Date = Date(), authorUID: String, authorName: String) {
+    init(id: String = UUID().uuidString, title: String, genre: String, price: Int, lyricsPreview: String, createdAt: Date = Date(), authorUID: String, authorName: String) {
         self.id = id
         self.title = title
-        self.genre = description
+        self.genre = genre
         self.price = price
         self.lyricsPreview = lyricsPreview
         self.createdAt = createdAt
         self.authorUID = authorUID
         self.authorName = authorName
     }
+    
     
     
 }

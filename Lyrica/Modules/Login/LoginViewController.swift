@@ -17,7 +17,7 @@ class LoginViewController: UIViewController {
     // MARK: - Properties
     private let viewModel: LoginViewModel
     private let loginView = LoginView()
-    private let cancellables: Set<AnyCancellable> = []
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Init
     
@@ -43,7 +43,58 @@ class LoginViewController: UIViewController {
     // MARK: - Bindings
     
     private func setupBindings() {
-        loginView
+        loginView.loginTextField.textPublisher
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.email, on: viewModel)
+            .store(in: &cancellables)
+        
+        loginView.passwordTextField.textPublisher
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.password, on: viewModel)
+            .store(in: &cancellables)
+        
+        viewModel.$isReadyToSignIn
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isReady in
+                self?.loginView.loginButton.setEnabled(isReady)
+            }
+            .store(in: &cancellables)
+        
+        loginView.noAccountButton.touchUpInsidePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.onSignUpTap?()
+            }
+            .store(in: &cancellables)
+        
+        loginView.loginButton.touchUpInsidePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.loginTapped()
+            }
+            .store(in: &cancellables)
+        }
+    
+    // MARK: - Actions
+    
+    private func loginTapped() {
+        loginView.errorLabel.isHidden = true
+        
+        viewModel.signIn()
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    if case .failure = completion {
+                        self?.loginView.errorLabel.text = "Incorrect email or password"
+                        self?.loginView.errorLabel.isHidden = false
+                    }
+                },
+                receiveValue: { [weak self] user in
+                    self?.onLoginSuccess?(user)
+                }
+            )
+            .store(in: &cancellables)
     }
     
 }

@@ -18,7 +18,7 @@ class LoginView: UIView {
     let passwordTextField: MainTextField = {
         let textField = MainTextField()
         textField.placeholder = "Password"
-        textField.isHidden = true
+        textField.isSecureTextEntry = true
         return textField
     }()
     
@@ -43,7 +43,47 @@ class LoginView: UIView {
     }()
     
     let noAccountButton: MainButton = {
+        let button = MainButton(type: .system)
+        button.setTitle("Don't have an account/Sign Up", for: .normal)
+        button.setTitleColor(.lyricaTerracotta, for: .normal)
+        return button
+    }()
+    
+    let stackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [])
+        stackView.axis = .vertical
+        stackView.spacing = 20
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = .lyricaIvory
+        setupViews()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setupViews() {
+        [loginTextField, passwordTextField, errorLabel, loginButton, noAccountButton].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            stackView.addArrangedSubview($0)
+        }
         
+        addSubview(stackView)
+        
+        NSLayoutConstraint.activate([
+            stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            stackView.widthAnchor.constraint(equalToConstant: 300),
+            
+            loginTextField.heightAnchor.constraint(equalToConstant: 44),
+            passwordTextField.heightAnchor.constraint(equalToConstant: 44),
+            loginButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
     }
 }
 
