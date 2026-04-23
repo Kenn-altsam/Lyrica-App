@@ -1,9 +1,4 @@
-//
-//  AppCoordinator.swift
-//  Lyrica
-//
-//  Created by Altynbek Kenzhe on 04.04.2026.
-//
+
 
 import UIKit
 import Combine
@@ -13,7 +8,7 @@ final class AppCoordinator: Coordinator {
     // MARK: - Propertiesd
     private let window: UIWindow
     private let navigationController: UINavigationController
-    private let authService = AuthService()
+    private let authService = AuthService.shared
     
     private weak var homeNavigationController: UINavigationController?
     private var cancellables = Set<AnyCancellable>()
@@ -124,16 +119,29 @@ final class AppCoordinator: Coordinator {
         profileVC.onLogout = { [weak self] in
             self?.handleLogout()
         }
-        profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.circle"), tag: 1)
+        profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.circle"), tag: 2)
         let profileNav = UINavigationController(rootViewController: profileVC)
         
+        let searchVC = SearchViewController()
+        searchVC.onSongTap = { [weak self] song in
+            self?.showSongDetailsFromSearch(song: song, searchNav: searchVC.navigationController)
+        }
+        searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 1)
+        let searchNav = UINavigationController(rootViewController: searchVC)
+        
         let tabBar = UITabBarController()
-        tabBar.viewControllers = [homeNav, profileNav]
-        tabBar.tabBar.tintColor = .lyricaTerracotta
+        tabBar.viewControllers = [homeNav, searchNav, profileNav]
+        tabBar.tabBar.tintColor = .lyricaShamrock
+        tabBar.tabBar.backgroundColor = .lyricaIvory
         return tabBar
     }
     
-    // MARK: - Task Screens
+    // MARK: - Song Screens
+    private func showSongDetailsFromSearch(song: SongModel, searchNav: UINavigationController?) {
+        let vc = SongDetailsViewController(viewModel: SongDetailsViewModel(song: song))
+        searchNav?.pushViewController(vc, animated: true)
+    }
+    
     private func showCreateSong() {
         let vc = CreateSongViewController(viewModel: CreateSongViewModel())
         vc.onSongCreated = { [weak self] in

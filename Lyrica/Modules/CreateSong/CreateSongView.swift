@@ -1,45 +1,33 @@
-//
-//  CreateListingView.swift
-//  Lyrica
-//
-//  Created by Altynbek Kenzhe on 05.04.2026.
-//
 
 import UIKit
 
 class CreateSongView: UIView {
     
-    let songTextField: UITextField = {
-        let textField = UITextField()
+    let songTextField: MainTextField = {
+        let textField = MainTextField()
         textField.placeholder = "Enter Song name"
-        textField.textColor = .darkGray
-        textField.borderStyle = .roundedRect
-        textField.setLeftPaddingPoints(12)
+        textField.autocorrectionType = .no
         return textField
     }()
     
-    let priceTextField: UITextField = {
-        let textField = UITextField()
+    let priceTextField: MainTextField = {
+        let textField = MainTextField()
         textField.placeholder = "Enter Price"
-        textField.textColor = .darkGray
-        textField.borderStyle = .roundedRect
         textField.keyboardType = .numberPad
-        textField.setLeftPaddingPoints(12)
         return textField
     }()
     
-    let genreTextField: UITextField = {
-        let textField = UITextField()
+    let genreTextField: MainTextField = {
+        let textField = MainTextField()
         textField.placeholder = "Genre (Pop, R&B, Hip-Hop...)"
-        textField.textColor = .darkGray
-        textField.borderStyle = .roundedRect
-        textField.setLeftPaddingPoints(12)
+        textField.autocorrectionType = .no
         return textField
     }()
     
     let lyricsTextView: UITextView = {
         let textView = UITextView()
         textView.text = "Enter lyrics ..."
+        textView.autocorrectionType = .no
         textView.textColor = .lightGray
         textView.font = UIFont.systemFont(ofSize: 16)
         textView.backgroundColor = .white
@@ -53,7 +41,7 @@ class CreateSongView: UIView {
     
     let textFieldStackView: UIStackView = {
         let stackView = UIStackView()
-        stackView.backgroundColor = .lyricaTerracotta
+        stackView.backgroundColor = .lyricaShamrock
         stackView.layer.cornerRadius = 12
         stackView.axis = .vertical
         stackView.distribution = .fill
@@ -65,11 +53,11 @@ class CreateSongView: UIView {
         return stackView
     }()
     
-    let postSongButton: UIButton = {
-        let button = UIButton(type: .system)
+    let postSongButton: MainButton = {
+        let button = MainButton(type: .system)
         button.setTitle("Post Song", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 18)
-        button.backgroundColor = .lyricaTerracotta
+        button.backgroundColor = .lyricaShamrock
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 8
         return button
@@ -123,10 +111,17 @@ class CreateSongView: UIView {
     }
 }
 
-extension UITextField {
-    func setLeftPaddingPoints(_ amount: CGFloat) {
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.height))
-        leftView = paddingView
-        leftViewMode = .always
-    }
-}
+
+
+
+
+
+
+//
+//extension UITextField {
+//    func setLeftPaddingPoints(_ amount: CGFloat) {
+//        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.height))
+//        leftView = paddingView
+//        leftViewMode = .always
+//    }
+//}

@@ -1,9 +1,4 @@
-//
-//  ListingServic.swift
-//  Lyrica
-//
-//  Created by Altynbek Kenzhe on 05.04.2026.
-//
+
 
 import Foundation
 import Combine
@@ -18,7 +13,7 @@ final class SongService {
     
     func saveSong(_ song: SongModel) -> AnyPublisher<Void, Error> {
         Future { [weak self] promise in
-            self?.db.collection("songs")
+            self?.db.collection("Songs")
                 .document(song.id)
                 .setData(song.dictionary) { err in
                     if let err = err {
@@ -35,7 +30,7 @@ final class SongService {
     
     func fetchSongs() -> AnyPublisher<[SongModel], Error> {
         Future { [weak self] promise in
-            self?.db.collection("songs")
+            self?.db.collection("Songs")
                 .order(by: "createdAt", descending: true)
                 .getDocuments { snapshot, err in
                     if let err = err {
@@ -54,10 +49,10 @@ final class SongService {
     
     // Только песни конкретному исполнителю
     
-    func fetchSongs(for customerUID: String) -> AnyPublisher<[SongModel], Error> {
+    func fetchSongs(for authorUID: String) -> AnyPublisher<[SongModel], Error> {
         Future { [weak self] promise in
-            self?.db.collection("songs")
-                .whereField("customerUID", isEqualTo: customerUID)
+            self?.db.collection("Songs")
+                .whereField("authorUID", isEqualTo: authorUID)
                 .order(by: "createdAt", descending: true)
                 .getDocuments { snapshot, err in
                     if let err = err {

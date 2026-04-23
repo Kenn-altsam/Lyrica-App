@@ -1,9 +1,3 @@
-//
-//  AuthorHomeViewModel.swift
-//  Lyrica
-//
-//  Created by Altynbek Kenzhe on 05.04.2026.
-//
 
 import Foundation
 import Combine
@@ -11,12 +5,11 @@ import Combine
 class CustomerHomeViewModel {
     
     // Mark: - Output
-    var onSongsUpdated: (() -> Void)?
-    private(set) var songs: [SongModel] = []
+    @Published private(set) var songs: [SongModel] = []
     
     // Mark: - Private
     private let songService = SongService.shared
-    private let authService = AuthService()
+    private let authService = AuthService.shared
     private var cancellables = Set<AnyCancellable>()
     
     // Mark: - Data
@@ -39,7 +32,6 @@ class CustomerHomeViewModel {
                 },
                 receiveValue: { [weak self] songs in
                     self?.songs = songs
-                    self?.onSongsUpdated?()
                 }
             )
             .store(in: &cancellables)
@@ -47,5 +39,14 @@ class CustomerHomeViewModel {
     
     func logout() {
         try? authService.logOut()
+    }
+    
+    func subtitle(for song: SongModel) -> String {
+        if !song.authorName.isEmpty {
+            return song.authorName
+        }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        return formatter.string(from: song.createdAt)
     }
 }

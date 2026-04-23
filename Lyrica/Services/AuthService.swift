@@ -7,6 +7,8 @@ import FirebaseFirestore
 
 class AuthService {
     
+    static let shared = AuthService()
+    
     private let db = Firestore.firestore()
     
     var currentUser: AuthUser? {

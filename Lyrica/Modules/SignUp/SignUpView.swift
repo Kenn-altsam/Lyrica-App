@@ -1,9 +1,3 @@
-//
-//  SignUpView.swift
-//  Turmys App
-//
-//  Created by Yerkezhan Zheneessova on 10.04.2025.
-//
 
 import UIKit
 
@@ -25,7 +19,7 @@ class SignUpView: UIView{
         let roleSegmented = UISegmentedControl(items: ["Author", "Customer"])
         roleSegmented.selectedSegmentIndex = 0
         roleSegmented.backgroundColor = UIColor.white.withAlphaComponent(0.4)
-        roleSegmented.selectedSegmentTintColor = .lyricaTerracotta
+        roleSegmented.selectedSegmentTintColor = .lyricaShamrock
         roleSegmented.layer.cornerRadius = 10
         roleSegmented.layer.masksToBounds = true
         
@@ -67,7 +61,7 @@ class SignUpView: UIView{
     let validationLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 13)
-        label.textColor = .lyricaTerracotta
+        label.textColor = .lyricaShamrock
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -76,7 +70,7 @@ class SignUpView: UIView{
     let signUpButton : MainButton = {
        let button = MainButton(type: .system)
         button.setTitle("Sign Up", for: .normal)
-        button.backgroundColor = .lyricaTerracotta
+        button.backgroundColor = .lyricaShamrock
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 10
         button.setEnabled(false)

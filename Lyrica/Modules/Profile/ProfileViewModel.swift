@@ -1,16 +1,10 @@
-//
-//  ProfileViewModel.swift
-//  Lyrica
-//
-//  Created by Altynbek Kenzhe on 05.04.2026.
-//
 
 import Foundation
 
 class ProfileViewModel {
     
     // Mark: - Private
-    private let authService = AuthService()
+    private let authService = AuthService.shared
     
     // Mark: - Output
     var name: String {

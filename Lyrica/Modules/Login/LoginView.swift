@@ -1,9 +1,4 @@
-//
-//  LoginView.swift
-//  Lyrica
-//
-//  Created by Altynbek Kenzhe on 04.04.2026.
-//
+
 
 import UIKit
 
@@ -25,7 +20,7 @@ class LoginView: UIView {
     let loginButton: MainButton = {
         let button = MainButton(type: .system)
         button.setTitle("Login", for: .normal)
-        button.backgroundColor = .lyricaTerracotta
+        button.backgroundColor = .lyricaShamrock
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 10
         button.setEnabled(false)
@@ -35,7 +30,7 @@ class LoginView: UIView {
     let errorLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 13)
-        label.textColor = .lyricaTerracotta
+        label.textColor = .lyricaShamrock
         label.textAlignment = .center
         label.numberOfLines = 0
         label.isHidden = true
@@ -45,7 +40,7 @@ class LoginView: UIView {
     let noAccountButton: MainButton = {
         let button = MainButton(type: .system)
         button.setTitle("Don't have an account/Sign Up", for: .normal)
-        button.setTitleColor(.lyricaTerracotta, for: .normal)
+        button.setTitleColor(.lyricaShamrock, for: .normal)
         return button
     }()
     

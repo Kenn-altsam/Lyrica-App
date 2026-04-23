@@ -1,9 +1,4 @@
-//
-//  SignUpViewModel.swift
-//  Lyrica
-//
-//  Created by Altynbek Kenzhe on 05.04.2026.
-//
+
 
 import Foundation
 import Combine
@@ -17,14 +12,14 @@ class SignUpViewModel {
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var repeatPassword: String = ""
-    @Published var role: UserRole = .customer
+    @Published var role: UserRole = .author
     
     // Mark: - Output
     @Published private(set) var isReadyToSignUp: Bool = false
     @Published private(set) var validationMessage: String = ""
     
     // Mark: - Private
-    private let authService = AuthService()
+    private let authService = AuthService.shared
     private var cancellables = Set<AnyCancellable>()
     
     init() {

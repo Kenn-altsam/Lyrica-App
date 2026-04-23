@@ -1,11 +1,6 @@
-//
-//  ProfileViewController.swift
-//  Lyrica
-//
-//  Created by Altynbek Kenzhe on 05.04.2026.
-//
 
 import UIKit
+import Combine
 
 class ProfileViewController: UIViewController {
     
@@ -14,6 +9,8 @@ class ProfileViewController: UIViewController {
     
     // Mark: - Properties
     private let viewModel: ProfileViewModel
+    
+    private var cancellables = Set<AnyCancellable>()
     
     // Mark: - UI
     private let avatarLabel: UILabel = {
@@ -36,18 +33,18 @@ class ProfileViewController: UIViewController {
     private let roleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
-        label.textColor = .lyricaTerracotta
+        label.textColor = .lyricaShamrock
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    private let logoutButton: UIButton = {
-        let button = UIButton(type: .system)
+    private let logoutButton: MainButton = {
+        let button = MainButton(type: .system)
         button.setTitle("Выйти", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 18)
-        button.backgroundColor = .lyricaTerracotta
+        button.backgroundColor = .lyricaShamrock
         button.layer.cornerRadius = 8
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -81,7 +78,12 @@ class ProfileViewController: UIViewController {
         title = "Profile"
         setupLayout()
         configure()
-        logoutButton.addTarget(self, action: #selector(logoutTapped), for: .touchUpInside)
+        logoutButton.touchUpInsidePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.logoutTapped()
+            }
+            .store(in: &cancellables)
     }
     
     // Mark: - Setup
@@ -108,7 +110,6 @@ class ProfileViewController: UIViewController {
     }
     
     // Mark - Actions
-    @objc
     private func logoutTapped() {
         viewModel.logout()
         onLogout?()

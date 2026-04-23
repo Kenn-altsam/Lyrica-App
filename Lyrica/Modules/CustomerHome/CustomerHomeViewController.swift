@@ -1,11 +1,7 @@
-//
-//  AuthorHomeViewController.swift
-//  Lyrica
-//
-//  Created by Altynbek Kenzhe on 05.04.2026.
-//
+
 
 import UIKit
+import Combine
 
 class CustomerHomeViewController: UIViewController {
     
@@ -16,6 +12,10 @@ class CustomerHomeViewController: UIViewController {
     // Mark: - Properties
     private let rootView = CustomerHomeView()
     private let viewModel: CustomerHomeViewModel
+    
+    // Mark: - Cancellables
+    
+    private var cancellables = Set<AnyCancellable>()
     
     // Mark: - Init
     init(viewModel: CustomerHomeViewModel) {
@@ -38,9 +38,12 @@ class CustomerHomeViewController: UIViewController {
         title = "Active Songs"
         setupNavBar()
         setupTableView()
-        viewModel.onSongsUpdated = { [weak self] in
-            self?.rootView.tableView.reloadData()
-        }
+        viewModel.$songs
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.rootView.tableView.reloadData()
+            }
+            .store(in: &cancellables)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -73,7 +76,8 @@ extension CustomerHomeViewController: UITableViewDataSource, UITableViewDelegate
         ) as? SongTableViewCell else {
             return UITableViewCell()
         }
-        cell.configure(with: viewModel.song(at: indexPath.row))
+        let subtitle = viewModel.subtitle(for: viewModel.song(at: indexPath.row))
+        cell.configure(with: viewModel.song(at: indexPath.row), subtitle: subtitle)
         return cell
     }
     

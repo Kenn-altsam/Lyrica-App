@@ -1,9 +1,3 @@
-//
-//  ListingDetailsViewController.swift
-//  Lyrica
-//
-//  Created by Altynbek Kenzhe on 05.04.2026.
-//
 
 import UIKit
 
@@ -37,7 +31,7 @@ class SongDetailsViewController: UIViewController {
     // Mark: - Setup
     private func configure() {
         songDetailsView.titleLabel.text = viewModel.title
-        songDetailsView.lyricsLabel.text = viewModel.lyrics
+        songDetailsView.lyricsTextView.text = viewModel.lyrics
         songDetailsView.dateLabel.text = viewModel.formattedDate
         songDetailsView.priceLabel.text = viewModel.formattedPrice
     }

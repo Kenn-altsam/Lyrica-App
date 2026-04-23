@@ -1,9 +1,4 @@
-//
-//  SignUpViewController.swift
-//  Lyrica
-//
-//  Created by Altynbek Kenzhe on 05.04.2026.
-//
+
 
 import UIKit
 import Combine
@@ -91,7 +86,7 @@ class SignUpViewController: UIViewController {
     // Mark: - Actions
     @objc private func roleDidChange() {
         let index = signUpView.roleSegmentedControl.selectedSegmentIndex
-        viewModel.role = index == 0 ? .customer : .author
+        viewModel.role = index == 0 ? .author : .customer
     }
     
     private func signUpTapped() {

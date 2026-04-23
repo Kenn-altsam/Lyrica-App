@@ -11,12 +11,11 @@ import Combine
 class AuthorHomeViewModel {
     
     // MARK: - Output
-    var onSongsUpdated: (() -> Void)?
-    private(set) var songs: [SongModel] = []
+    @Published private(set) var songs: [SongModel] = []
     
     // MARK: - Private
     private let songService = SongService.shared
-    private let authService = AuthService()
+    private let authService = AuthService.shared
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Data
@@ -41,7 +40,6 @@ class AuthorHomeViewModel {
                 },
                 receiveValue: { [weak self] songs in
                     self?.songs = songs
-                    self?.onSongsUpdated?()
                 }
             )
             .store(in: &cancellables)
@@ -49,5 +47,14 @@ class AuthorHomeViewModel {
     
     func logout() {
         try? authService.logOut()
+    }
+    
+    func subtitle(for song: SongModel) -> String {
+        if !song.authorName.isEmpty {
+            return song.authorName
+        }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        return formatter.string(from: song.createdAt)
     }
 }

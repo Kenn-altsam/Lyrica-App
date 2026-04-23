@@ -1,9 +1,4 @@
-//
-//  CreateListingViewModel.swift
-//  Lyrica
-//
-//  Created by Altynbek Kenzhe on 05.04.2026.
-//
+
 
 import Foundation
 import Combine
@@ -12,7 +7,7 @@ class CreateSongViewModel {
     
     // Mark: - Private
     private let songService = SongService.shared
-    private let authService = AuthService()
+    private let authService = AuthService.shared
     private var cancellables = Set<AnyCancellable>()
     
     // Mark: - Actions

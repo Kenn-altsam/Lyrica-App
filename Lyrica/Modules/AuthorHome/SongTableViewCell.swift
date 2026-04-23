@@ -46,16 +46,10 @@ class SongTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with song: SongModel) {
+    func configure(with song: SongModel, subtitle: String) {
         titleLabel.text = song.title
-        dateLabel.text = song.authorName.isEmpty ? format(date: song.createdAt) : song.authorName
-        priceLabel.text = "\(song.price) ₸"
-    }
-    
-    func format(date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
-        return formatter.string(from: date)
+        dateLabel.text = subtitle
+        priceLabel.text = "\(song.price) $"
     }
     
     func setupLayout() {
@@ -67,7 +61,7 @@ class SongTableViewCell: UITableViewCell {
         innerCardView.backgroundColor = .lyricaIvory
         innerCardView.layer.cornerRadius = 12
         innerCardView.layer.borderWidth = 1.5
-        innerCardView.layer.borderColor = UIColor.lyricaTerracotta.cgColor
+        innerCardView.layer.borderColor = UIColor.lyricaShamrock.cgColor
         innerCardView.isUserInteractionEnabled = true
         contentView.addSubview(innerCardView)
         innerCardView.translatesAutoresizingMaskIntoConstraints = false

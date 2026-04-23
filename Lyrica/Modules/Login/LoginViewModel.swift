@@ -1,9 +1,4 @@
-//
-//  LoginViewModel.swift
-//  Lyrica
-//
-//  Created by Altynbek Kenzhe on 04.04.2026.
-//
+
 
 import Foundation
 import Combine
@@ -18,7 +13,7 @@ class LoginViewModel {
     @Published private(set) var isReadyToSignIn: Bool = false
     
     // MARK: - Private
-    private let authService = AuthService()
+    private let authService = AuthService.shared
     private var cancellables = Set<AnyCancellable>()
     
     init() {

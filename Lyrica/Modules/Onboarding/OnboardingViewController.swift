@@ -1,9 +1,4 @@
-//
-//  OnboardingViewController.swift
-//  Lyrica
-//
-//  Created by Altynbek Kenzhe on 05.04.2026.
-//
+
 
 import UIKit
 
@@ -34,7 +29,7 @@ class OnboardingViewController: UIViewController {
         let button = UIButton()
         button.setTitle("Continue", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        button.backgroundColor = .lyricaTerracotta
+        button.backgroundColor = .lyricaShamrock
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 8
         return button

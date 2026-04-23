@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 class AuthorHomeViewController: UIViewController {
     
@@ -19,6 +20,8 @@ class AuthorHomeViewController: UIViewController {
     
     private let rootView = AuthorHomeView()
     private let viewModel: AuthorHomeViewModel
+    
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Init
     
@@ -42,9 +45,12 @@ class AuthorHomeViewController: UIViewController {
         title = "My Songs"
         setupNavBar()
         setupTableView()
-        viewModel.onSongsUpdated = { [weak self] in
-            self?.rootView.tableView.reloadData()
-        }
+        viewModel.$songs
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.rootView.tableView.reloadData()
+            }
+            .store(in: &cancellables)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -83,7 +89,8 @@ extension AuthorHomeViewController: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: SongTableViewCell.identifier, for: indexPath) as? SongTableViewCell else {
             return UITableViewCell()
         }
-        cell.configure(with: viewModel.song(at: indexPath.row))
+        let subtitle = viewModel.subtitle(for: viewModel.song(at: indexPath.row))
+        cell.configure(with: viewModel.song(at: indexPath.row), subtitle: subtitle)
         return cell
     }
     

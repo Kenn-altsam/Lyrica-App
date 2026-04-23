@@ -1,9 +1,4 @@
-//
-//  CreateListingViewController.swift
-//  Lyrica
-//
-//  Created by Altynbek Kenzhe on 05.04.2026.
-//
+
 
 import UIKit
 import Combine
@@ -39,11 +34,16 @@ class CreateSongViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Create Song"
-        createSongView.postSongButton.addTarget(self, action: #selector(saveSong), for: .touchUpInside)
+        createSongView.postSongButton.touchUpInsidePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.saveSong()
+            }
+            .store(in: &cancellables)
+        createSongView.lyricsTextView.delegate = self
     }
     
     // Mark: - Actions
-    @objc
     private func saveSong() {
         let title = createSongView.songTextField.text ?? ""
         let genre = createSongView.genreTextField.text ?? ""
@@ -60,7 +60,7 @@ class CreateSongViewController: UIViewController {
             return
         }
         if let priceError = Validator.validate(priceText: priceText) {
-            showAlert(message: priceText)
+            showAlert(message: priceError)
             return
         }
         
@@ -83,5 +83,22 @@ class CreateSongViewController: UIViewController {
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
+    }
+}
+
+extension CreateSongViewController: UITextViewDelegate {
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.text == "Enter lyrics ..." && textView.textColor == .lightGray {
+            textView.text = ""
+            textView.textColor = .black
+        }
+    }
+
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            textView.text = "Enter lyrics ..."
+            textView.textColor = .lightGray
+        }
     }
 }
