@@ -34,12 +34,31 @@ final class AppCoordinator: Coordinator {
     func start() {
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
+        showSplash()
+    }
+    
+    private func showSplash() {
+        let splash = SplashViewController()
+        
+        splash.onFinish = { [weak self] in
+            self?.checkAuthState()
+        }
+        
+        navigationController.setViewControllers([splash], animated: false)
+        navigationController.setNavigationBarHidden(true, animated: false)
+    }
 
+    // MARK: - Auth State
+    
+    private func checkAuthState() {
         authService.authStateDidChangePublisher
             .first()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] user in
                 guard let self else { return }
+                
+                self.navigationController.setNavigationBarHidden(false, animated: false)
+                
                 if !UserDefaults.standard.hasSeenOnboarding {
                     self.showOnboarding()
                 } else if let user = user {
@@ -50,8 +69,6 @@ final class AppCoordinator: Coordinator {
             }
             .store(in: &cancellables)
     }
-
-    // MARK: - Auth State
 
     private func fetchProfileAndRoute(user: AuthUser) {
         authService.fetchUserProfile(uid: user.uid)
