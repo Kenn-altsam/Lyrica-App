@@ -12,9 +12,6 @@ class CustomerHomeViewController: UIViewController {
     // Mark: - Properties
     private let rootView = CustomerHomeView()
     private let viewModel: CustomerHomeViewModel
-    
-    // Mark: - Cancellables
-    
     private var cancellables = Set<AnyCancellable>()
     
     // Mark: - Init
@@ -36,8 +33,9 @@ class CustomerHomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Active Songs"
-        setupNavBar()
+//        setupNavBar()
         setupTableView()
+        
         viewModel.$songs
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -51,15 +49,44 @@ class CustomerHomeViewController: UIViewController {
         viewModel.fetchSongs()
     }
     
-    // Mark: - Setup
-    private func setupNavBar() {
-        
-    }
+//    // Mark: - Setup
+//    private func setupNavBar() {
+//        
+//    }
     
     private func setupTableView() {
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
+    }
+    
+    // Mark: - Private helpers
+    
+    private func showFavoriteToast(isFavorited: Bool) {
+        let message = isFavorited ? "❤️ Added to Favorites" : "🤍 Removed from Favorites"
+            let toast = UILabel()
+            toast.text = message
+            toast.textAlignment = .center
+            toast.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+            toast.textColor = .white
+            toast.backgroundColor = UIColor.lyricaShamrock.withAlphaComponent(0.92)
+            toast.layer.cornerRadius = 16
+            toast.clipsToBounds = true
+            toast.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(toast)
         
+        NSLayoutConstraint.activate([
+            toast.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            toast.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            toast.heightAnchor.constraint(equalToConstant: 40),
+            toast.widthAnchor.constraint(greaterThanOrEqualToConstant: 200)
+        ])
+        
+        toast.alpha = 0
+        UIView.animate(withDuration: 0.3, animations: { toast.alpha = 1 }) { _ in
+            UIView.animate(withDuration: 0.3, delay: 1.4, animations: { toast.alpha = 0 }) { _ in
+                toast.removeFromSuperview()
+            }
+        }
     }
 }
 
@@ -76,12 +103,37 @@ extension CustomerHomeViewController: UITableViewDataSource, UITableViewDelegate
         ) as? SongTableViewCell else {
             return UITableViewCell()
         }
-        let subtitle = viewModel.subtitle(for: viewModel.song(at: indexPath.row))
-        cell.configure(with: viewModel.song(at: indexPath.row), subtitle: subtitle)
+        let song = viewModel.song(at: indexPath.row)
+//        let subtitle = viewModel.subtitle(for: viewModel.song(at: indexPath.row))
+        cell.configure(with: song, subtitle: viewModel.subtitle(for: song))
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         onSongTap?(viewModel.song(at: indexPath.row))
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        72
+    }
+    
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let song = viewModel.song(at: indexPath.row)
+        let isFav = FavoritesService.shared.isFavorite(song)
+        let action = UIContextualAction(style: .normal, title: nil) { [weak self] _, _, completion in
+            FavoritesService.shared.toggleFavorite(song)
+            let nowFav = FavoritesService.shared.isFavorite(song)
+            self?.showFavoriteToast(isFavorited: nowFav)
+            
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+            completion(true)
+        }
+        
+        action.image = UIImage(systemName: isFav ? "heart.slash.fill" : "heart.fill")
+        action.backgroundColor = isFav ? UIColor.systemGray : UIColor.systemPink
+        action.title = isFav ? "Remove" : "Favorite"
+        
+        return UISwipeActionsConfiguration(actions: [action])
+        
     }
 }
