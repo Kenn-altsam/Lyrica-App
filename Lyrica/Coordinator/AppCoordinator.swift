@@ -1,7 +1,7 @@
-//
-//  AppCoordinator.swift
-//  Lyrica
-//
+
+// ПРАВИЛО PRD: Coordinator создаёт экраны, устанавливает callbacks на ViewController,
+// управляет навигацией. Теперь showMusicDetail создаёт MusicDetailViewModel и
+// передаёт его в MusicDetailViewController — как это сделано для SongDetailsViewController.
 
 import UIKit
 import Combine
@@ -36,29 +36,23 @@ final class AppCoordinator: Coordinator {
         window.makeKeyAndVisible()
         showSplash()
     }
-    
+
     private func showSplash() {
         let splash = SplashViewController()
-        
-        splash.onFinish = { [weak self] in
-            self?.checkAuthState()
-        }
-        
+        splash.onFinish = { [weak self] in self?.checkAuthState() }
         navigationController.setViewControllers([splash], animated: false)
         navigationController.setNavigationBarHidden(true, animated: false)
     }
 
     // MARK: - Auth State
-    
+
     private func checkAuthState() {
         authService.authStateDidChangePublisher
             .first()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] user in
                 guard let self else { return }
-                
                 self.navigationController.setNavigationBarHidden(false, animated: false)
-                
                 if !UserDefaults.standard.hasSeenOnboarding {
                     self.showOnboarding()
                 } else if let user = user {
@@ -105,7 +99,6 @@ final class AppCoordinator: Coordinator {
 
         let homeNav = UINavigationController(rootViewController: homeVC)
         homeNavigationController = homeNav
-        // Авторам Favorites не нужен — только Songs, Search, Profile
         navigationController.setViewControllers([makeTabBar(homeNav: homeNav, showFavorites: false)], animated: true)
     }
 
@@ -117,7 +110,6 @@ final class AppCoordinator: Coordinator {
 
         let homeNav = UINavigationController(rootViewController: homeVC)
         homeNavigationController = homeNav
-        // Кастомерам показываем Favorites
         navigationController.setViewControllers([makeTabBar(homeNav: homeNav, showFavorites: true)], animated: true)
     }
 
@@ -133,6 +125,16 @@ final class AppCoordinator: Coordinator {
         searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 1)
         let searchNav = UINavigationController(rootViewController: searchVC)
 
+        // --- Music (iTunes API) ---
+        // Coordinator создаёт MusicViewController и устанавливает callback onTrackTap.
+        // MusicViewController не знает о MusicDetailViewController — только Coordinator знает.
+        let musicVC = MusicListViewController()
+        musicVC.onTrackTap = { [weak self] track in
+            self?.showMusicDetail(track: track, nav: musicVC.navigationController)
+        }
+        musicVC.tabBarItem = UITabBarItem(title: "Music", image: UIImage(systemName: "music.note.list"), tag: 4)
+        let musicNav = UINavigationController(rootViewController: musicVC)
+
         // --- Profile ---
         let profileVC = ProfileViewController(viewModel: ProfileViewModel())
         profileVC.onLogout = { [weak self] in self?.handleLogout() }
@@ -144,17 +146,15 @@ final class AppCoordinator: Coordinator {
         tabBar.tabBar.backgroundColor = .lyricaIvory
 
         if showFavorites {
-            // --- Favorites (только для кастомера) ---
             let favVC = FavoritesViewController()
             favVC.onSongTap = { [weak self] song in
                 self?.showSongDetailsFromSearch(song: song, nav: favVC.navigationController)
             }
             favVC.tabBarItem = UITabBarItem(title: "Favorites", image: UIImage(systemName: "heart"), tag: 2)
             let favNav = UINavigationController(rootViewController: favVC)
-
-            tabBar.viewControllers = [homeNav, searchNav, favNav, profileNav]
+            tabBar.viewControllers = [homeNav, searchNav, favNav, musicNav, profileNav]
         } else {
-            tabBar.viewControllers = [homeNav, searchNav, profileNav]
+            tabBar.viewControllers = [homeNav, searchNav, musicNav, profileNav]
         }
 
         return tabBar
@@ -169,6 +169,15 @@ final class AppCoordinator: Coordinator {
 
     private func showSongDetailsFromSearch(song: SongModel, nav: UINavigationController?) {
         let vc = SongDetailsViewController(viewModel: SongDetailsViewModel(song: song))
+        nav?.pushViewController(vc, animated: true)
+    }
+
+    // MARK: - Music (iTunes) Detail
+    // Coordinator создаёт ViewModel и передаёт его в ViewController — паттерн из PRD.
+
+    private func showMusicDetail(track: MusicTrack, nav: UINavigationController?) {
+        let viewModel = MusicDetailViewModel(track: track)          // ← Coordinator создаёт VM
+        let vc = MusicDetailViewController(viewModel: viewModel)    // ← передаёт через init
         nav?.pushViewController(vc, animated: true)
     }
 

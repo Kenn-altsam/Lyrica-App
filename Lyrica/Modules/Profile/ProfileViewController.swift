@@ -1,4 +1,7 @@
-
+//
+//  ProfileViewController.swift
+//  Lyrica
+//
 
 import UIKit
 import Combine
@@ -30,24 +33,24 @@ class ProfileViewController: UIViewController {
     }()
 
     private let nameLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 22, weight: .bold)
-        label.textAlignment = .center
-        label.textColor = .label
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+        let l = UILabel()
+        l.font = UIFont.systemFont(ofSize: 22, weight: .bold)
+        l.textAlignment = .center
+        l.textColor = .label
+        l.translatesAutoresizingMaskIntoConstraints = false
+        return l
     }()
 
     private let roleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14, weight: .medium)
-        label.textColor = .white
-        label.textAlignment = .center
-        label.layer.cornerRadius = 10
-        label.clipsToBounds = true
-        label.backgroundColor = .lyricaShamrock
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+        let l = UILabel()
+        l.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        l.textColor = .white
+        l.textAlignment = .justified
+        l.layer.cornerRadius = 10
+        l.clipsToBounds = true
+        l.backgroundColor = .lyricaShamrock
+        l.translatesAutoresizingMaskIntoConstraints = false
+        return l
     }()
 
     private let infoCardView: UIView = {
@@ -62,6 +65,26 @@ class ProfileViewController: UIViewController {
         return v
     }()
 
+    // rowStack — свойство класса чтобы к нему обратиться в constraints
+    private let rowStack: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.spacing = 0
+        sv.translatesAutoresizingMaskIntoConstraints = false
+        return sv
+    }()
+
+    private let logoutButton: MainButton = {
+        let button = MainButton()
+        button.setTitle("Log Out", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        button.backgroundColor = UIColor.systemRed
+        button.layer.cornerRadius = 12
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+
     private let appVersionLabel: UILabel = {
         let l = UILabel()
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
@@ -71,17 +94,6 @@ class ProfileViewController: UIViewController {
         l.textAlignment = .center
         l.translatesAutoresizingMaskIntoConstraints = false
         return l
-    }()
-
-    private let logoutButton: MainButton = {
-        let button = MainButton(type: .system)
-        button.setTitle("Log Out", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
-        button.backgroundColor = UIColor.systemRed
-        button.layer.cornerRadius = 12
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
     }()
 
     // MARK: - Init
@@ -99,14 +111,9 @@ class ProfileViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .lyricaIvory
         title = "Profile"
-        setupLayout()
         configure()
-        logoutButton.touchUpInsidePublisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.logoutTapped()
-            }
-            .store(in: &cancellables)
+        setupLayout()
+        bindLogout()
     }
 
     // MARK: - Configure
@@ -115,7 +122,6 @@ class ProfileViewController: UIViewController {
         let name = viewModel.name
         nameLabel.text = name
 
-        // Инициалы: "Altynbek Kenzhe" → "AK"
         let parts = name.split(separator: " ")
         let initials = parts.prefix(2).compactMap { $0.first }.map { String($0) }.joined()
         initialsLabel.text = initials.isEmpty ? "?" : initials
@@ -123,67 +129,74 @@ class ProfileViewController: UIViewController {
         roleLabel.text = "  \(viewModel.roleTitle)  "
     }
 
+    // MARK: - Bind
+
+    private func bindLogout() {
+        logoutButton.touchUpInsidePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.viewModel.logout()
+                self?.onLogout?()
+            }
+            .store(in: &cancellables)
+    }
+
     // MARK: - Layout
 
     private func setupLayout() {
+        // Инициалы внутри аватара
         avatarCircle.addSubview(initialsLabel)
 
-        // Строки инфо-карточки
+        // Заполняем rowStack строками
         let rows: [(String, String)] = [
             ("person.fill", viewModel.name),
             ("star.fill",   viewModel.roleTitle)
         ]
-
-        let rowStack = UIStackView()
-        rowStack.axis = .vertical
-        rowStack.spacing = 0
-        rowStack.translatesAutoresizingMaskIntoConstraints = false
-
         rows.enumerated().forEach { i, row in
-            let rowView = makeInfoRow(icon: row.0, text: row.1)
-            rowStack.addArrangedSubview(rowView)
+            rowStack.addArrangedSubview(makeInfoRow(icon: row.0, text: row.1))
             if i < rows.count - 1 {
-                let sep = makeSeparator()
-                rowStack.addArrangedSubview(sep)
+                rowStack.addArrangedSubview(makeSeparator())
             }
         }
 
+        // rowStack внутри карточки
         infoCardView.addSubview(rowStack)
 
-        [avatarCircle, nameLabel, roleLabel, infoCardView, logoutButton, appVersionLabel].forEach {
-            view.addSubview($0)
-        }
+        // Центральный стек — аватар + имя + роль + карточка
+        let centerStack = UIStackView(arrangedSubviews: [avatarCircle, nameLabel, roleLabel, infoCardView])
+        centerStack.axis = .vertical
+        centerStack.spacing = 16
+        centerStack.alignment = .center
+        centerStack.translatesAutoresizingMaskIntoConstraints = false
+
+        [centerStack, logoutButton, appVersionLabel].forEach { view.addSubview($0) }
 
         NSLayoutConstraint.activate([
             // Аватар
-            avatarCircle.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
-            avatarCircle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             avatarCircle.widthAnchor.constraint(equalToConstant: 100),
             avatarCircle.heightAnchor.constraint(equalToConstant: 100),
 
             initialsLabel.centerXAnchor.constraint(equalTo: avatarCircle.centerXAnchor),
             initialsLabel.centerYAnchor.constraint(equalTo: avatarCircle.centerYAnchor),
 
-            // Имя
-            nameLabel.topAnchor.constraint(equalTo: avatarCircle.bottomAnchor, constant: 16),
-            nameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-            nameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
-
-            // Роль-бейдж
-            roleLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
-            roleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            // Роль-бейдж высота
             roleLabel.heightAnchor.constraint(equalToConstant: 24),
 
-            // Карточка
-            infoCardView.topAnchor.constraint(equalTo: roleLabel.bottomAnchor, constant: 28),
-            infoCardView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            infoCardView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            // Карточка на всю ширину стека
+            infoCardView.leadingAnchor.constraint(equalTo: centerStack.leadingAnchor),
+            infoCardView.trailingAnchor.constraint(equalTo: centerStack.trailingAnchor),
 
+            // rowStack внутри карточки
             rowStack.topAnchor.constraint(equalTo: infoCardView.topAnchor),
             rowStack.leadingAnchor.constraint(equalTo: infoCardView.leadingAnchor),
             rowStack.trailingAnchor.constraint(equalTo: infoCardView.trailingAnchor),
             rowStack.bottomAnchor.constraint(equalTo: infoCardView.bottomAnchor),
+
+            // Центральный стек — по центру экрана
+            centerStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            centerStack.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -40),
+            centerStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            centerStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
 
             // Кнопка выхода
             logoutButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
@@ -235,16 +248,7 @@ class ProfileViewController: UIViewController {
         let sep = UIView()
         sep.backgroundColor = UIColor.separator
         sep.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            sep.heightAnchor.constraint(equalToConstant: 0.5)
-        ])
+        NSLayoutConstraint.activate([sep.heightAnchor.constraint(equalToConstant: 0.5)])
         return sep
-    }
-
-    // MARK: - Actions
-
-    private func logoutTapped() {
-        viewModel.logout()
-        onLogout?()
     }
 }
